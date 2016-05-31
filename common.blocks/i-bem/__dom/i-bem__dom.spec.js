@@ -319,10 +319,9 @@ describe('i-bem__dom', function() {
                 onSetMod : {
                     'js' : {
                         'inited' : function() {
-                            this.findBlocksInside('block2').map(function(block) {
-                                return block.hasMod('js', 'inited');
-                            }).should.be.eql([true, true]);
-                            done();
+                            finale(this.findBlocksInside('block2').map(function(block2) {
+                                return block2.hasMod('js', 'inited');
+                            }));
                         }
                     }
                 }
@@ -330,7 +329,7 @@ describe('i-bem__dom', function() {
 
             DOM.decl('block2');
 
-            DOM.init(BEMHTML.apply({
+            var node = $(BEMHTML.apply({
                 block : 'block',
                 js : true,
                 content : [
@@ -339,8 +338,16 @@ describe('i-bem__dom', function() {
                 ]
             }));
 
-            delete DOM.blocks['block'];
-            delete DOM.blocks['block2'];
+            DOM.init(node);
+
+            function finale(res) {
+                DOM.destruct(node);
+                delete DOM.blocks['block'];
+                delete DOM.blocks['block2'];
+
+                res.should.be.eql([true, true]);
+                done();
+            }
         });
     });
 
